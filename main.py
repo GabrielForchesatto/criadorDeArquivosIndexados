@@ -42,6 +42,7 @@ def removerPontuacao(frase, paraRemover):
 
 novoDoc = input(str("Criar novo documento [S/N]? ")).lower()
 
+#Editar o caminho conforme o seu
 caminho = 'C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'
 
 if novoDoc == "s":
@@ -57,6 +58,7 @@ if novoDoc == "s":
 
 indexados = {}
 
+#Editar o caminho igual ao caminho anterior
 for _, _, arquivo in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'):
     # le os arquivos presentes na pasta
 
@@ -69,7 +71,7 @@ for _, _, arquivo in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutur
             frase = frase.split()  # remove os espaços e retorna uma list com cada palavra indentada
             #print(frase)
 
-            for i, c in enumerate(frase):
+            for i, c in enumerate(frase): #percorre todas as palavras da list
 
                 if frase[i] in stopwords:
                     frase.remove(frase[i])
@@ -80,7 +82,7 @@ for _, _, arquivo in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutur
                 if frase[i] in stopwords:
                     frase.remove(frase[i])
 
-            frase = Stemming(frase)
+            frase = Stemming(frase) #só jesus sabe o que isso faz
             print(frase)
 
 

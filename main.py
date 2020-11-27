@@ -59,34 +59,45 @@ if novoDoc == "s":
 indexados = {}
 
 #Editar o caminho igual ao caminho anterior
-for _, _, arquivo in os.walk('C:/Users/LEO\Desktop/criadorDeArquivosIndexados-master/docs/'):
+for _, _, arquivos in os.walk('C:/Users/LEO\Desktop/criadorDeArquivosIndexados-master/docs/'):
     # le os arquivos presentes na pasta
 
-    for c in arquivo:  # percorre os arquivos .txt
+    for arquivo in arquivos:  # percorre os arquivos .txt
         
-        ler = open(caminho + c, 'r')  # abre os arquivos .txt
-        
-        for frase in ler:  # transforma o conteudo dos arquivos de list para string
+        ler = open(caminho + arquivo, 'r')  # abre os arquivos .txt
 
-            frase = frase.split()  # remove os espaços e retorna uma list com cada palavra indentada
-            #print(frase)
+        for texto in ler: 
+            print("\n====== TEXTOS =====")
+            print(texto)
+            
+            # transforma o conteudo dos arquivos de list para string
+            palavras = texto.split()  # remove os espaços e retorna uma list com cada palavra indentada
+            #print(palavras)                
 
-            for i, c in enumerate(frase): #percorre todas as palavras da list
+            for i, c in enumerate(palavras): #percorre todas as palavras da list
 
-                if frase[i] in stopwords:
-                    frase.remove(frase[i])
+                if palavras[i] in stopwords:
+                    palavras.remove(palavras[i])
 
-                if frase[i] in stopwords:
-                    frase.remove(frase[i])
+                if palavras[i] in stopwords:
+                    palavras.remove(palavras[i])
 
-                if frase[i] in stopwords:
-                    frase.remove(frase[i])
+                if palavras[i] in stopwords:
+                    palavras.remove(palavras[i])                    
 
-            frase = Stemming(frase) #só jesus sabe o que isso faz
-            print(frase)
+           
+            for palavra in palavras:
+                if palavra in texto:
+                    if palavra not in indexados:
+                        indexados[palavra] = arquivo
+                    else:
+                        if indexados[palavra] != arquivo:
+                            valor = indexados[palavra] +","+ arquivo
+                            indexados[palavra] = valor
+            palavraSteming = Stemming(palavras) #só jesus sabe o que isso faz
 
-
-
+print("\n")          
+print(indexados)
 
 
 

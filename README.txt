@@ -1,1 +1,1 @@
-a pasta .idea é importante
+a pasta .idea contém os encoding pro .txt

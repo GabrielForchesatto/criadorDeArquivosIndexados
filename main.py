@@ -7,7 +7,7 @@ nltk.download('rslp')
 
 
 def Stemming(frase):
-    nucleo = RSLPStemmer()
+    nucleo = RSLPStemmer() 
     fraseNucleo = []
     for palavra in frase:
         fraseNucleo.append(nucleo.stem(palavra.lower()))

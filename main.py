@@ -44,7 +44,7 @@ def removerPontuacao(frase, paraRemover):
 novoDoc = input(str("Criar novo documento [S/N]? ")).lower()
 
 # Editar o caminho conforme o seu
-caminho = 'C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'
+caminho = 'C:/Users/guilh/Documents/Faculdade/2 Semestre/Estrutura de Dados/g2/criadorDeArquivosIndexados/docs/'
 
 if novoDoc == "s":
     nome = input(str('Nome do arquivo [incluindo o .txt]: '))
@@ -61,7 +61,7 @@ indexados = {}
 frase_final = []
 
 # Editar o caminho igual ao caminho anterior
-for _, _, arquivos in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'):
+for _, _, arquivos in os.walk('C:/Users/guilh/Documents/Faculdade/2 Semestre/Estrutura de Dados/g2/criadorDeArquivosIndexados/docs/'):
     # le os arquivos presentes na pasta
 
     for arquivo in arquivos:  # percorre os arquivos .txt

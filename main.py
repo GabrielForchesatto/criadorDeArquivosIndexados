@@ -57,6 +57,7 @@ if novoDoc == "s":
     arquivo.write(conteudo)  # escreve o conteúdo
 
 indexados = {}
+frase_final = []
 
 #Editar o caminho igual ao caminho anterior
 for _, _, arquivos in os.walk('C:/Users/guilh/Documents/Faculdade/2 Semestre/Estrutura de Dados/g2/criadorDeArquivosIndexados/docs/'):
@@ -64,13 +65,14 @@ for _, _, arquivos in os.walk('C:/Users/guilh/Documents/Faculdade/2 Semestre/Est
 
     for arquivo in arquivos:  # percorre os arquivos .txt
 
+        print(arquivo)
         ler = open(caminho + arquivo, 'r')  # abre os arquivos .txt
 
         for frase in ler:  # transforma o conteudo dos arquivos de list para string
 
             frase = frase.split()  # remove os espaços e retorna uma list com cada palavra indentada
             #print(frase)
-
+            frase = Stemming(frase)
             for i, arquivo in enumerate(frase): #percorre todas as palavras da list
 
                 if frase[i] in stopwords:
@@ -82,8 +84,15 @@ for _, _, arquivos in os.walk('C:/Users/guilh/Documents/Faculdade/2 Semestre/Est
                 if frase[i] in stopwords:
                     frase.remove(frase[i])
 
-            frase = Stemming(frase) #só jesus sabe o que isso faz
-            print(frase)
+                indexados[frase[i]] = arquivo
+
+            #frase = Stemming(frase) #só jesus sabe o que isso faz
+            #frase_final.append(frase)
+            #print(frase)
+            
+        
+    
+print(indexados)
 
 
 

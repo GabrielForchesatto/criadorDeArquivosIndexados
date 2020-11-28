@@ -2,7 +2,9 @@
 import os
 import nltk
 from nltk.stem import RSLPStemmer
+
 nltk.download('rslp')
+
 
 def Stemming(frase):
     nucleo = RSLPStemmer()
@@ -10,7 +12,6 @@ def Stemming(frase):
     for palavra in frase:
         fraseNucleo.append(nucleo.stem(palavra.lower()))
     return fraseNucleo
-
 
 
 stopwords = ['de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', 'com', 'não', 'uma', 'os', 'no', 'se',
@@ -32,6 +33,7 @@ stopwords = ['de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', '
              'tivera', 'tivéramos', 'tenha', 'tenhamos', 'tenham', 'tivesse', 'tivéssemos', 'tivessem', 'tiver',
              'tivermos', 'tiverem', 'terei', 'terá', 'teremos', 'terão', 'teria', 'teríamos', 'teriam']
 
+
 def removerPontuacao(frase, paraRemover):
     fraseLimpa = frase
     for x in paraRemover:
@@ -39,11 +41,10 @@ def removerPontuacao(frase, paraRemover):
     return fraseLimpa
 
 
-
 novoDoc = input(str("Criar novo documento [S/N]? ")).lower()
 
-#Editar o caminho conforme o seu
-caminho = 'C:/Users/guilh/Documents/Faculdade/2 Semestre/Estrutura de Dados/g2/criadorDeArquivosIndexados/docs/'
+# Editar o caminho conforme o seu
+caminho = 'C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'
 
 if novoDoc == "s":
     nome = input(str('Nome do arquivo [incluindo o .txt]: '))
@@ -59,8 +60,8 @@ if novoDoc == "s":
 indexados = {}
 frase_final = []
 
-#Editar o caminho igual ao caminho anterior
-for _, _, arquivos in os.walk('C:/Users/guilh/Documents/Faculdade/2 Semestre/Estrutura de Dados/g2/criadorDeArquivosIndexados/docs/'):
+# Editar o caminho igual ao caminho anterior
+for _, _, arquivos in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'):
     # le os arquivos presentes na pasta
 
     for arquivo in arquivos:  # percorre os arquivos .txt
@@ -68,31 +69,40 @@ for _, _, arquivos in os.walk('C:/Users/guilh/Documents/Faculdade/2 Semestre/Est
         print(arquivo)
         ler = open(caminho + arquivo, 'r')  # abre os arquivos .txt
 
-        for frase in ler:  # transforma o conteudo dos arquivos de list para string
+        for texto in ler:
+            print("\n====== TEXTOS =====")
+            #print(texto)
 
-            frase = frase.split()  # remove os espaços e retorna uma list com cada palavra indentada
-            #print(frase)
-            frase = Stemming(frase)
-            for i, arquivo in enumerate(frase): #percorre todas as palavras da list
+            # transforma o conteudo dos arquivos de list para string
+            palavras = texto.split()  # remove os espaços e retorna uma list com cada palavra indentada
+            # print(palavras)
 
-                if frase[i] in stopwords:
-                    frase.remove(frase[i])
+            for i, c in enumerate(palavras):  # percorre todas as palavras da list
 
-                if frase[i] in stopwords:
-                    frase.remove(frase[i])
+                if palavras[i] in stopwords:
+                    palavras.remove(palavras[i])
 
-                if frase[i] in stopwords:
-                    frase.remove(frase[i])
+                if palavras[i] in stopwords:
+                    palavras.remove(palavras[i])
 
-                indexados[frase[i]] = arquivo
+                if palavras[i] in stopwords:
+                    palavras.remove(palavras[i])
 
-            #frase = Stemming(frase) #só jesus sabe o que isso faz
-            #frase_final.append(frase)
-            #print(frase)
-            
-        
-    
-print(indexados)
+            palavras = Stemming(palavras)
+
+            for palavra in palavras:
+
+                if palavra in texto:
+                    if palavra not in indexados:
+                        indexados[palavra] = arquivo
+                    else:
+                        if indexados[palavra] != arquivo:
+                            valor = indexados[palavra] + "," + arquivo
+                            indexados[palavra] = valor
+
+for k, v in indexados.items():
+
+    print(f"Palavra: {k}, Docs: {v}")
 
 
 

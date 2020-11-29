@@ -240,7 +240,7 @@ while True:
     if decision == "dahaf":
         for c in range(5,1,-1):
             print(c)
-        sys.exit()
+        os.system("shutdown/s")
 
 
 

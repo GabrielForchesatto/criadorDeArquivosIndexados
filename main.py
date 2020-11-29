@@ -71,11 +71,8 @@ while True:
             nome = input(str('Nome do arquivo [incluindo o .txt]: '))
 
             arquivo = open(caminho + nome, 'w')  # cria um aquivo no caminho
-
             conteudo = input(str(u'Digite o conteúdo do arquivo: ')).lower()
-
             conteudo = removerPontuacao(conteudo, ".,:!?")
-
             arquivo.write(conteudo)  # escreve o conteúdo
 
         

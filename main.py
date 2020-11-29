@@ -1,8 +1,17 @@
 # encoding: utf-8
 import os
+import pickle
 import nltk
+import sys
 from nltk.stem import RSLPStemmer
+
 nltk.download('rslp')
+
+
+# Agrupando as funções previamente
+def StemmingSingular(palavra):
+    nucleo = RSLPStemmer()
+    return nucleo.stem(palavra.lower().strip())
 
 def Stemming(frase):
     nucleo = RSLPStemmer()
@@ -11,6 +20,12 @@ def Stemming(frase):
         fraseNucleo.append(nucleo.stem(palavra.lower()))
     return fraseNucleo
 
+
+def removerPontuacao(frase, paraRemover):
+    fraseLimpa = frase
+    for x in paraRemover:
+        fraseLimpa = fraseLimpa.replace(x, '')
+    return fraseLimpa
 
 
 stopwords = ['de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', 'com', 'não', 'uma', 'os', 'no', 'se',
@@ -32,72 +47,198 @@ stopwords = ['de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', '
              'tivera', 'tivéramos', 'tenha', 'tenhamos', 'tenham', 'tivesse', 'tivéssemos', 'tivessem', 'tiver',
              'tivermos', 'tiverem', 'terei', 'terá', 'teremos', 'terão', 'teria', 'teríamos', 'teriam']
 
-def removerPontuacao(frase, paraRemover):
-    fraseLimpa = frase
-    for x in paraRemover:
-        fraseLimpa = fraseLimpa.replace(x, '')
-    return fraseLimpa
-
-
-
-novoDoc = input(str("Criar novo documento [S/N]? ")).lower()
-
-#Editar o caminho conforme o seu
+# Editar o caminho conforme o seu
 caminho = 'C:/Users/LEO/Desktop/criadorDeArquivosIndexados-master/docs/'
 
-if novoDoc == "s":
-    nome = input(str('Nome do arquivo [incluindo o .txt]: '))
+# Menu e ciclo de execução da aplicação
+print('------- INDEXAÇÃO -------')
+print("""0. Encerrar a aplicação
+1. Criar Novo Documento
+2. Indexar documentos '.txt' presentes na pasta docs/
+3. Realizar consultas
+    1. Usando operador OR
+    2. Usando operador AND
+    3. [opcional] Usando expressões booleanas
+4. Mostrar Índice Invertido (para debug / print)""")
 
-    arquivo = open(caminho + nome, 'w')  # cria um aquivo no caminho
+while True:
+    # O que o usuário deseja fazer
+    decision = input(str("Digite a opção: "))
 
-    conteudo = input(str(u'Digite o conteúdo do arquivo: ')).lower()
+    # Verificando se o comando é válido ou não
+    if decision not in '01234' and decision != "dahaf":
+        print("Comando inváido")
 
-    conteudo = removerPontuacao(conteudo, ".,:!?")
+    else:
+        # Instanciando as variáveis necessárias
+        indexados = {}
+        frase_final = []
 
-    arquivo.write(conteudo)  # escreve o conteúdo
+        if decision == "1":
+            nome = input(str('Nome do arquivo [incluindo o .txt]: '))
 
-indexados = {}
+            arquivo = open(caminho + nome, 'w')  # cria um aquivo no caminho
 
-#Editar o caminho igual ao caminho anterior
-for _, _, arquivos in os.walk('C:/Users/LEO\Desktop/criadorDeArquivosIndexados-master/docs/'):
-    # le os arquivos presentes na pasta
+            conteudo = input(str(u'Digite o conteúdo do arquivo: ')).lower()
 
-    for arquivo in arquivos:  # percorre os arquivos .txt
-        
-        ler = open(caminho + arquivo, 'r')  # abre os arquivos .txt
+            conteudo = removerPontuacao(conteudo, ".,:!?")
 
-        for texto in ler: 
-            print("\n====== TEXTOS =====")
-            print(texto)
+            arquivo.write(conteudo)  # escreve o conteúdo
+
+
+
+        elif decision == "2":
+            # Instanciando o objeto pickle responsável por criar/escrever o arquivo, "wb" = write binary
+            pickle_out = open("dict_index.txt", "wb")
             
-            # transforma o conteudo dos arquivos de list para string
-            palavras = texto.split()  # remove os espaços e retorna uma list com cada palavra indentada
-            #print(palavras)                
+            # Editar o caminho igual ao caminho anterior
+            for _, _, arquivos in os.walk('C:/Users/LEO/Desktop/criadorDeArquivosIndexados-master/docs/'):
+                # le os arquivos presentes na pasta
 
-            for i, c in enumerate(palavras): #percorre todas as palavras da list
+                for arquivo in arquivos:  # percorre os arquivos .txt
 
-                if palavras[i] in stopwords:
-                    palavras.remove(palavras[i])
+                    print(arquivo)
+                    ler = open(caminho + arquivo, 'r')  # abre os arquivos .txt
 
-                if palavras[i] in stopwords:
-                    palavras.remove(palavras[i])
+                    for texto in ler:
+                        #print("\n====== TEXTOS =====")
+                        # print(texto)
 
-                if palavras[i] in stopwords:
-                    palavras.remove(palavras[i])                    
+                        # transforma o conteudo dos arquivos de list para string
+                        palavras = texto.split()  # remove os espaços e retorna uma list com cada palavra indentada
+                        # print(palavras)
 
+                        for i, c in enumerate(palavras):  # percorre todas as palavras da list
+
+                            if palavras[i] in stopwords:
+                                palavras.remove(palavras[i])
+
+                            if palavras[i] in stopwords:
+                                palavras.remove(palavras[i])
+
+                            if palavras[i] in stopwords:
+                                palavras.remove(palavras[i])
+
+                        palavras = Stemming(palavras)
+
+                        for palavra in palavras:
+
+                            if palavra in texto:
+                                if palavra not in indexados:
+                                    indexados[palavra] = arquivo
+                                else:
+                                    if indexados[palavra] != arquivo:
+                                        valor = indexados[palavra] + "," + arquivo
+                                        indexados[palavra] = valor
+            # Salva o dicionário e fecha o objeto pickle
+            pickle.dump(indexados, pickle_out)
+            pickle_out.close()
+        elif decision == "3":
+            pickle_in = open("dict_index.txt", "rb")
+            final_dict = pickle.load(pickle_in)
+            
+            while True:
+                option = str(input("""
+    0. Sair
+    1. Usando operador OR
+    2. Usando operador AND
+    3. [opcional] Usando expressões booleanas
+    : """))     
+                if option not in '0123':
+                    print("Comando inváido")
+               
+                if option == "0":
+                    break
+
+                if option == "1":
+                    palavra1 = StemmingSingular(str(input("palavra 1: ")))
+                    palavra2 = StemmingSingular(str(input("palavra 2: ")))
+                    print("\n")
+
+                    if palavra1 == palavra2:
+                        if palavra1 in final_dict:
+                            print(palavra1+": "+final_dict.get(palavra1))
+                        else:
+                            print("Palavra(s) não encontradas")
+
+                    else :
+                        if palavra1 in final_dict.keys():
+                            print(palavra1+": "+final_dict.get(palavra1))
+                        if palavra2 in final_dict.keys():
+                            print(palavra2+": "+final_dict.get(palavra2))
+                        else:
+                            print("Palavra(s) não encontradas")
+
+                if option == "2":
+                    palavra1 = StemmingSingular(str(input("palavra 1: ")))
+                    palavra2 = StemmingSingular(str(input("palavra 2: ")))
+                    print("\n")
+
+                    if palavra1 == palavra2:
+                        if palavra1 in final_dict:
+                            print(palavra1+": "+final_dict.get(palavra1))
+                        else:
+                            print("Palavras não encontradas")
+                    else :
+                        if palavra1 in final_dict.keys() and palavra2 in final_dict.keys():
+                            print(palavra1+": "+final_dict.get(palavra1))
+                            print(palavra2+": "+final_dict.get(palavra2))
+
+                        else:
+                            print("Palavras não encontradas")
+
+
+        elif decision == "4":
+            # Instancia o objeto pickle, abre o arquivo em modo "rb" = read byte
+            pickle_in = open("dict_index.txt", "rb")
+            final_dict = pickle.load(pickle_in)
+            for k, v in final_dict.items():
+                print(f"Palavra: {k}, Docs: {v}")
            
-            for palavra in palavras:
-                if palavra in texto:
-                    if palavra not in indexados:
-                        indexados[palavra] = arquivo
-                    else:
-                        if indexados[palavra] != arquivo:
-                            valor = indexados[palavra] +","+ arquivo
-                            indexados[palavra] = valor
-            palavraSteming = Stemming(palavras) #só jesus sabe o que isso faz
 
-print("\n")          
-print(indexados)
+        elif decision == "0":
+            break
 
-
-
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    if decision == "dahaf":
+        for c in range(5,1,-1):
+            print(c)
+        sys.exit()
+            

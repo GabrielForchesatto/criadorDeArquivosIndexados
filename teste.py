@@ -9,10 +9,6 @@ nltk.download('rslp')
 
 # Agrupando as funções previamente
 
-#Stemming para retornar como string
-def StemmingSingular(palavra):
-    nucleo = RSLPStemmer()
-    return nucleo.stem(palavra)
 
 #Stemming para retornar como lista
 def Stemming(frase):
@@ -65,7 +61,7 @@ stopwords = ['de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', '
              'tivermos', 'tiverem', 'terei', 'terá', 'teremos', 'terão', 'teria', 'teríamos', 'teriam']
 
 # Editar o caminho conforme o seu
-caminho = 'C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'
+caminho = 'C:/Users/LEO/Desktop/criadorDeArquivosIndexados-master/docs/'
 
 # Menu e ciclo de execução da aplicação
 print('------- INDEXAÇÃO -------')
@@ -81,15 +77,18 @@ print("""0. Encerrar a aplicação
 while True:
     # O que o usuário deseja fazer
     decision = input(str("Digite a opção: "))
-
+    if "0" in decision:
+        break
     # Verificando se o comando é válido ou não
-    if decision not in '01234' and decision != "dahaf":
+    elif decision not in '01234' and decision != "dahaf":
         print("Comando inváido")
+
 
     else:
         # Instanciando as variáveis necessárias
         indexados = {}
         frase_final = []
+
 
         if decision == "1":
             nome = input(str('Nome do arquivo [incluindo o .txt]: '))
@@ -103,7 +102,7 @@ while True:
             pickle_out = open("dict_index.txt", "wb")
 
             # Editar o caminho igual ao caminho anterior
-            for _, _, arquivos in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'):
+            for _, _, arquivos in os.walk('C:/Users/LEO/Desktop/criadorDeArquivosIndexados-master/docs/'):
                 # le os arquivos presentes na pasta
 
                 for arquivo in arquivos:  # percorre os arquivos .txt
@@ -121,13 +120,14 @@ while True:
 
                         for palavra in palavras:
                             if palavra in texto:
-
                                 if palavra not in indexados:
-                                    indexados[palavra] = arquivo #indexa a palavra
+                                    listaDeValores = []
+                                    listaDeValores.append(arquivo)
+                                    indexados[palavra] = listaDeValores #indexa a palavra
                                 else:
-                                    if indexados[palavra] != arquivo: #indexa o arquivo como value para a key palavra
-                                        valor = indexados[palavra] + "," + arquivo
-                                        indexados[palavra] = valor
+                                    if arquivo not in indexados[palavra]: #indexa o arquivo como value para a key palavra
+                                        indexados[palavra].append(arquivo)
+                                        
 
             # Salva o dicionário e fecha o objeto pickle
             pickle.dump(indexados, pickle_out)
@@ -150,74 +150,78 @@ while True:
                 if option == "0":
                     break
 
-                else:
-                    palavra1 = str(input("palavra 1: ").strip()) #preserva a palavra pesquisada
-                    palavra2 = str(input("palavra 2: ").strip())
-                    palavra1Stemming = StemmingSingular(palavra1) #faz Stemming na palavra pesquisada
-                    palavra2Stemming = StemmingSingular(palavra2)
-
-
-
-
-
+                
+                busca = str(input("Insira as palavras: ").strip().lower())
+                busca = removerPontuacao(busca, '".,:!?"%¨$&*)({}[]><;|/!-_=+')
+                busca = busca.split()
+                busca = removerStopWords(busca)
+                busca = Stemming(busca)
+                
 
 
                 if option == "1":
                     #print(palavra1Stemming)
                     #print(final_dict.get(palavra1Stemming))
-                    if palavra1Stemming == palavra2Stemming:
-
-                        if palavra1Stemming in final_dict:
-                            print(palavra1Stemming + ": " + final_dict.get(palavra1Stemming))
+                    for palavra in busca:
+                        if palavra in final_dict.keys():
+                            print(f"A palavra {palavra} esta no(s) arquivo(s): {final_dict.get(palavra)}")
                         else:
-                            print("Palavra(s) não encontradas")
-
-
-                    if palavra1Stemming in final_dict.keys():
-                        print(f"A palavra {palavra1} esta no(s) arquivo(s): {final_dict.get(palavra1Stemming)}")
-                    else:
-                        print(f"A palavra {palavra1} não está indexada")
-
-                    if palavra2Stemming in final_dict.keys():
-                        print(f"A palavra {palavra2} esta no(s) arquivo(s): {final_dict.get(palavra2Stemming)}")
-                    else:
-                        print(f"A palavra {palavra2} não está indexada")
-
-
+                            print(f"A palavra {palavra} não está indexada")
 
                 if option == "2":
+                    
 
-                    if palavra1Stemming not in final_dict or palavra2Stemming not in final_dict: #se ambas as palavras não estão indexadas
-                        print("Alguma palavra não está indexada")
+                    listaConjuntos = []
 
-                    elif palavra1Stemming == palavra2Stemming:
+                    for palavra in busca:
+                        
+                        if palavra not in final_dict: #se ambas as palavras não estão indexadas
+                            print(f"A palavra {palavra} não está indexada")
+                            
 
-                        if palavra1Stemming in final_dict:
-                            print(palavra1Stemming + ": " + final_dict.get(palavra1Stemming))
-                        else:
-                            print("Palavras não relacionadas")
-
+                    
+                        valorPalavra = final_dict.get(palavra) #pegar os Values da key palavra
+                        listaConjuntos.append(valorPalavra)
+                        
+                    final = []
+                    
+                    if len(busca) == 1:
+                        print(listaConjuntos)
+                    if len(busca) == 2:
+                        l = list(set(listaConjuntos[0]).intersection(listaConjuntos[1]))
+                        final = l
+                        # final.append(l)
+                    elif len(busca) == 3:
+                        l = list(set(listaConjuntos[0]).intersection(listaConjuntos[1]).intersection(listaConjuntos[2]))
+                        final = l
+                    elif len(busca) == 4:
+                        l = list(set(listaConjuntos[0]).intersection(listaConjuntos[1]).intersection(listaConjuntos[2]).intersection(listaConjuntos[3]))
+                        final = l
                     else:
-                        valorPalavra1 = final_dict.get(palavra1Stemming) #pegar os Values da key palavra
-                        valorPalavra2 = final_dict.get(palavra2Stemming)
-
-                        if valorPalavra1 in valorPalavra2 or valorPalavra2 in valorPalavra1: #verifica a Intersecção dos Values
-                            validador = True
-
-                            for letra in valorPalavra1: #percorre todas as letras do Value
-                                if letra not in valorPalavra2: #Verifica se há diferenças nos Values
-                                    validador  = False #Se tiver, mostra apenas o Value(s) da palavra 2
-                                                       #Se NÃO tiver, mostra apenas o Value(s) da palavra 1
-
-                            if validador == False:
-                                print(f"Ambas as palavras {palavra1} e {palavra2} estão no(s) arquivo(s): {valorPalavra2}")
+                        print("Número de palavras chave maior que o permitido")
+                        break
+                    relacionado = False
+                    sim = []
+                    nao = ""
+                    for item in listaConjuntos:
+                        for valores in item:
+                            if valores in final:
+                                relacionado = True
+                                if valores not in sim:
+                                    sim.append(valores)
+                                
                             else:
-                                print(f"Ambas as palavras {palavra1} e {palavra2} estão no(s) arquivo(s): {valorPalavra1}")
-
-                        else:
-                            print("Palavras não relacionadas")
-
-
+                                relacionado = False
+                                nao = "Sem interseçao"
+                    if len(sim) > 0 :
+                        relacionado = True
+                    
+                    if relacionado == True:
+                        print(sim)
+                    else:
+                        print(nao)
+                        
+                        
         elif decision == "4":
             # Instancia o objeto pickle, abre o arquivo em modo "rb" = read byte
             pickle_in = open("dict_index.txt", "rb")
@@ -226,16 +230,7 @@ while True:
                 print(f"Palavra: {k}, Docs: {v}")
 
 
-
-
-
-
-
-
-
     if decision == "dahaf":
         for c in range(5, 1, -1):
             print(c)
         os.system("shutdown/s")
-
-

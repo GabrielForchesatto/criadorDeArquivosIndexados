@@ -65,7 +65,7 @@ stopwords = ['de', 'a', 'o', 'que', 'e', 'é', 'do', 'da', 'em', 'um', 'para', '
              'tivermos', 'tiverem', 'terei', 'terá', 'teremos', 'terão', 'teria', 'teríamos', 'teriam']
 
 # Editar o caminho conforme o seu
-caminho = 'C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'
+caminho = 'C:/Users/LEO/Desktop/criadorDeArquivosIndexados-master/docs/'
 
 # Menu e ciclo de execução da aplicação
 print('------- INDEXAÇÃO -------')
@@ -106,7 +106,7 @@ while True:
             pickle_out = open("dict_index.txt", "wb")
 
             # Editar o caminho igual ao caminho anterior
-            for _, _, arquivos in os.walk('C:/Users/Usuario/OneDrive/Documentos/IMED/Estrutura de Dados/g2/docs/'):
+            for _, _, arquivos in os.walk('C:/Users/LEO/Desktop/criadorDeArquivosIndexados-master/docs/'):
                 # le os arquivos presentes na pasta
 
                 for arquivo in arquivos:  # percorre os arquivos .txt
@@ -124,13 +124,14 @@ while True:
 
                         for palavra in palavras:
                             if palavra in texto:
-
                                 if palavra not in indexados:
-                                    indexados[palavra] = arquivo #indexa a palavra
+                                    listaDeValores = []
+                                    listaDeValores.append(arquivo)
+                                    indexados[palavra] = listaDeValores #indexa a palavra
                                 else:
-                                    if indexados[palavra] != arquivo: #indexa o arquivo como value para a key palavra
-                                        valor = indexados[palavra] + "," + arquivo
-                                        indexados[palavra] = valor
+                                    if arquivo not in indexados[palavra]: #indexa o arquivo como value para a key palavra
+                                        indexados[palavra].append(arquivo)
+                                        
 
             # Salva o dicionário e fecha o objeto pickle
             pickle.dump(indexados, pickle_out)
@@ -189,29 +190,32 @@ while True:
                     elif palavra1Stemming == palavra2Stemming:
 
                         if palavra1Stemming in final_dict:
-                            print(palavra1Stemming + ": " + final_dict.get(palavra1Stemming))
+                            print(final_dict.get(palavra1Stemming))
                         else:
-                            print("Palavras não relacionadas")
+                            print("Palavras não relacionadas22")
 
                     else:
+                        lista = []
+                        
                         valorPalavra1 = final_dict.get(palavra1Stemming) #pegar os Values da key palavra
                         valorPalavra2 = final_dict.get(palavra2Stemming)
+                        
+                        for item1 in valorPalavra1:
+                            lista.append(item1)
+                        for item2 in valorPalavra2:
+                            lista.append(item2)
+                        local = []
+                        for item in lista:
+                            if item in valorPalavra1 and item in valorPalavra2:
+                                if item not in local:
+                                    local.append(item)
+                        print(f'Ambas palavras se encontram em {local}',end=' ')
+                                
+                            
+                         #verifica a Intersecção dos Values
 
-                        if valorPalavra1 in valorPalavra2 or valorPalavra2 in valorPalavra1: #verifica a Intersecção dos Values
-                            validador = True
 
-                            for letra in valorPalavra1: #percorre todas as letras do Value
-                                if letra not in valorPalavra2: #Verifica se há diferenças nos Values
-                                    validador  = False #Se tiver, mostra apenas o Value(s) da palavra 2
-                                                       #Se NÃO tiver, mostra apenas o Value(s) da palavra 1
-
-                            if validador == False:
-                                print(f"Ambas as palavras {palavra1} e {palavra2} estão no(s) arquivo(s): {valorPalavra2}")
-                            else:
-                                print(f"Ambas as palavras {palavra1} e {palavra2} estão no(s) arquivo(s): {valorPalavra1}")
-
-                        else:
-                            print("Palavras não relacionadas")
+                            
 
 
         elif decision == "4":
